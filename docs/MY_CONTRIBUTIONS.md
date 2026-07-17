@@ -1,6 +1,6 @@
 # 김준영 담당 기능 상세
 
-이 문서는 `마음의 날씨` 4인 팀 프로젝트에서 김준영이 담당한 Java 백엔드와 AWS 배포 작업을 코드·커밋 기록과 사용자 제공 정보를 기준으로 정리합니다.
+이 문서는 `마음의 날씨` 4인 팀 프로젝트에서 김준영이 담당한 Java 백엔드, Elastic Beanstalk 백엔드 배포와 AWS Amplify 프론트엔드 배포 작업을 코드·커밋 기록과 사용자 제공 정보를 기준으로 정리합니다.
 
 - 원본 저장소: [guddlrdl123/WeatherOfTheHeart-](https://github.com/guddlrdl123/WeatherOfTheHeart-)
 - 분석 기준 브랜치: `main`
@@ -28,9 +28,10 @@
 4. 광장 오브젝트·감정·위치를 이미지 생성 프롬프트로 변환
 5. AI 결과 이미지의 AWS S3 영속 저장
 6. GitHub Actions 기반 AWS Elastic Beanstalk 백엔드 배포
-7. `application.yaml`, 워크플로 YAML과 환경변수 구성
-8. 서버 포트, Procfile, Actuator와 헬스 체크 구성
-9. AWS RDS MySQL 연결을 위한 배포 환경변수와 운영 연결 점검
+7. AWS Amplify 프론트엔드 배포
+8. `application.yaml`, 워크플로 YAML과 환경변수 구성
+9. 서버 포트, Procfile, Actuator와 헬스 체크 구성
+10. AWS RDS MySQL 연결을 위한 배포 환경변수와 운영 연결 점검
 
 ## 현재 코드에서 확인되는 기여 흔적
 
@@ -49,7 +50,7 @@
 | [`HealthCheckController.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/global/health/HealthCheckController.java) | 23 | `/`, `/health` 상태 응답 |
 | [`deploy-backend.yml`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/.github/workflows/deploy-backend.yml) | 56 | 전체 백엔드 자동 배포 워크플로 |
 
-YAML·환경변수 설정은 사용자 제공 정보상 김준영 담당입니다. `application.yaml`은 이후 팀 기능이 추가되면서 여러 작성자의 변경이 섞였지만, 배포를 위한 서버 포트, DB·OpenAI·메일·AWS 설정의 환경변수화와 워크플로 구성은 김준영 담당으로 정리했습니다.
+YAML·환경변수 설정과 AWS Amplify 프론트엔드 배포는 사용자 제공 정보상 김준영 담당입니다. `application.yaml`은 이후 팀 기능이 추가되면서 여러 작성자의 변경이 섞였지만, 배포를 위한 서버 포트, DB·OpenAI·메일·AWS 설정의 환경변수화와 워크플로 구성은 김준영 담당으로 정리했습니다. 전체 Git 이력에는 Amplify 설정 파일이 없어 프론트엔드 배포의 세부 자동화 방식은 단정하지 않습니다.
 
 ## 1. 광장 참여 데이터 처리
 
@@ -217,9 +218,11 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 - GitHub Actions의 AWS 자격 증명은 GitHub Secrets에서 주입합니다.
 - 실제 버킷명, 액세스 키와 계정 번호는 이 포트폴리오에 노출하지 않습니다.
 
-## 7. AWS Elastic Beanstalk 배포
+## 7. AWS 배포
 
-김준영은 GitHub Actions, YAML, 환경변수 구성과 백엔드 배포를 담당했습니다.
+김준영은 GitHub Actions, YAML, 환경변수 구성과 백엔드·프론트엔드 배포를 담당했습니다.
+
+### 백엔드: AWS Elastic Beanstalk
 
 ### 배포 산출물
 
@@ -235,7 +238,15 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 - 민감값: GitHub Secrets 또는 Elastic Beanstalk 환경 속성에서 관리
 - 서버 상태 확인: `GET /`, `GET /health`
 
-## 8. GitHub Actions 자동 배포
+### 프론트엔드: AWS Amplify
+
+- React 프론트엔드의 운영 배포에 AWS Amplify 사용
+- 사용자 제공 정보상 김준영 담당
+- Amplify는 AWS 콘솔에서 저장소와 빌드 설정을 연결할 수 있어 별도 YAML이 꼭 필요하지 않음
+- 전체 Git 이력에는 Amplify 설정 파일이 없어 서비스 선택과 담당 사실만 기록
+- 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스 정리
+
+## 8. GitHub Actions 백엔드 자동 배포
 
 현재 `.github/workflows/deploy-backend.yml`의 동작은 다음과 같습니다.
 

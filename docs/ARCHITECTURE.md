@@ -1,18 +1,19 @@
 # 시스템 및 배포 구조
 
-이 문서는 `마음의 날씨`의 전체 시스템과 김준영 담당 영역, 광장 완료 처리와 AWS 배포 흐름을 분리해 설명합니다.
+이 문서는 `마음의 날씨`의 전체 시스템과 김준영 담당 영역, 광장 완료 처리와 AWS 백엔드·프론트엔드 배포 흐름을 분리해 설명합니다.
 
 - 원본 저장소: [guddlrdl123/WeatherOfTheHeart-](https://github.com/guddlrdl123/WeatherOfTheHeart-)
 - 전체 데이터 모델: [원본 저장소 DB ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md)
 - 분석 기준: 2026년 7월 17일 `main`
 - 프로젝트 형태: 4인 팀 프로젝트
-- 김준영 담당: Java 백엔드, 광장 완료·AI 이미지 흐름, S3 저장, GitHub Actions·YAML·환경변수 구성, AWS 백엔드 배포
+- 김준영 담당: Java 백엔드, 광장 완료·AI 이미지 흐름, S3 저장, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포, AWS Amplify 프론트엔드 배포
 
 ## 1. 전체 시스템 구조
 
 ```mermaid
 flowchart LR
     User["사용자"] --> Web["React 19 + TypeScript"]
+    Amplify["AWS Amplify"] --> Web
     Web -->|"JSON REST API"| API["Spring Boot 4 Backend"]
 
     subgraph BackendDomains["Backend Domains"]
@@ -50,8 +51,8 @@ flowchart LR
 | Persistence | Spring Data JPA, MySQL | 사용자·기억·광장·편지·운영 데이터 저장 |
 | AI | WebClient, OpenAI API, LangChain4j | 감정 분석과 광장 완성 이미지 생성 |
 | Object storage | AWS SDK for Java, S3 | AI 결과와 서비스 이미지 저장 |
-| Infrastructure | Elastic Beanstalk, RDS | 백엔드 프로세스와 운영 DB |
-| Delivery | GitHub Actions, Gradle, Procfile | 자동 빌드, 패키징과 배포 |
+| Infrastructure | Elastic Beanstalk, Amplify, RDS | 백엔드·프론트엔드 운영 환경과 운영 DB |
+| Delivery | GitHub Actions, Gradle, Procfile | 백엔드 자동 빌드, 패키징과 배포 |
 
 ## 2. 사용자 공간과 데이터 흐름
 
@@ -147,6 +148,8 @@ flowchart TB
     Build --> Package["application.jar + Procfile"]
     Package --> EB["Elastic Beanstalk"]
     EB --> Health["/ · /health"]
+
+    Frontend["React 프론트엔드"] --> Amplify["AWS Amplify 배포"]
 ```
 
 ### 담당 경계
@@ -156,9 +159,10 @@ flowchart TB
 | 광장 참여 데이터의 백엔드 기반 | React 화면과 사용자 상호작용 구현 |
 | 완료 조건·커밋 이후 이벤트 | 인증·개인 방·관리자 기능 전체를 단독 구현했다는 표현 |
 | AI 이미지 프롬프트와 완료 생성 흐름 | 다른 팀원 명의의 후속 통합 커밋을 개인 커밋으로 귀속 |
-| S3 이미지 저장과 URL 연결 | 프론트엔드 배포 구조(저장소에서 확인되지 않음) |
+| S3 이미지 저장과 URL 연결 | 현재 AWS 리소스가 계속 운영 중이라는 표현 |
 | GitHub Actions·YAML·환경변수 구성 | 서비스 전체를 혼자 설계·개발했다는 표현 |
 | Elastic Beanstalk 배포와 헬스 체크 | 수상 결과를 개인 단독 수상으로 표현 |
+| AWS Amplify 프론트엔드 배포(사용자 제공 정보) | Amplify 자동화 세부 방식이 저장소에서 확인된다는 표현 |
 
 ## 5. 광장 참여 요청 시퀀스
 
@@ -254,6 +258,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
+    Frontend["React + Vite 프론트엔드"] --> Amplify["AWS Amplify"]
+
     Dev["개발자 push"] --> Main["GitHub main"]
     Main -->|"backend/** 또는 workflow 변경"| Runner["GitHub Actions · ubuntu-latest"]
     Runner --> Checkout["actions/checkout@v4"]
@@ -283,7 +289,7 @@ flowchart LR
 | 버전 라벨 | GitHub run ID와 run attempt 조합 |
 | AWS 인증 | GitHub Secrets |
 
-프론트엔드의 실제 운영 배포 워크플로는 원본 저장소에서 확인되지 않아 위 자동 배포 구조에는 포함하지 않았습니다.
+프론트엔드는 AWS Amplify에 배포했으며 사용자 제공 정보상 김준영 담당입니다. Amplify는 AWS 콘솔에서 설정할 수 있어 별도 YAML이 꼭 필요하지 않습니다. 전체 Git 이력에는 Amplify 설정 파일이나 별도 워크플로가 없어, 위 구조에는 실제 배포 서비스만 표시하고 자동화 방식은 단정하지 않았습니다.
 
 ## 9. 설정과 환경변수 경계
 
@@ -324,8 +330,9 @@ flowchart TB
 
 ## 11. 운영 상태와 확인된 한계
 
-- 원본 설정의 서비스 도메인은 2026년 7월 17일 기준 DNS 응답이 없어 데모 운영 종료로 표시했습니다.
+- 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스를 정리했으며, 원본 설정의 서비스 도메인도 2026년 7월 17일 기준 DNS 응답이 없어 데모 운영 종료로 표시했습니다.
 - RDS 보안 그룹, IAM 정책과 Elastic Beanstalk 환경 속성 자체는 저장소에 포함되지 않으므로 코드의 환경변수 참조와 사용자 제공 정보를 기준으로 설명했습니다.
+- 전체 Git 이력에는 Amplify 설정 파일과 배포 워크플로가 없어 사용자 제공 담당 정보를 기준으로 설명했습니다.
 - `MAIN`, `SUPPORTING` 오브젝트 역할 구분은 현재 코드에 없어 구조도에 넣지 않았습니다.
 - 관리자 신고·경고·정지 기능은 프로젝트 전체 구조에 포함하지만 김준영의 직접 구현 영역으로 표시하지 않았습니다.
 - 백엔드 테스트 파일은 컨텍스트 로드와 인증 회귀 테스트 각 1건이며, 배포 워크플로는 테스트를 제외하므로 자동 검증 범위가 좁습니다.

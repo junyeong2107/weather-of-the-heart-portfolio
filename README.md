@@ -3,7 +3,7 @@
 > 말하지 못한 감정을 기록하면 AI가 감정을 분석해 날씨와 오브젝트로 표현하고, 여러 사람의 기록을 하나의 시각적 결과물로 완성하는 감정 기록·공유 서비스입니다.
 
 > [!NOTE]
-> 이 저장소는 4인 팀 프로젝트에서 김준영이 담당한 백엔드·배포 기여를 정리한 **문서형 포트폴리오**입니다. 전체 소스 코드는 [원본 팀 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)에 있으며, 다른 팀원의 작업을 개인 저장소로 복제하지 않았습니다.
+> 이 저장소는 4인 팀 프로젝트에서 김준영이 담당한 백엔드 개발과 AWS 배포 기여를 정리한 **문서형 포트폴리오**입니다. 전체 소스 코드는 [원본 팀 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)에 있으며, 다른 팀원의 작업을 개인 저장소로 복제하지 않았습니다.
 
 **빠른 탐색** · [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md) · [담당 기능 상세](docs/MY_CONTRIBUTIONS.md) · [시스템·배포 구조](docs/ARCHITECTURE.md) · [전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md) · [수상 증빙](#수상-및-증빙) · [검증 현황과 한계](#검증-현황과-기술적-한계)
 
@@ -14,7 +14,7 @@
 | 궁금한 점 | 답변 |
 | --- | --- |
 | 무엇을 만든 프로젝트인가요? | 감정을 기록하면 AI가 날씨와 오브젝트로 표현하고, 여러 사람의 기록을 한 장의 결과 이미지로 완성하는 서비스입니다. |
-| 무엇을 맡았나요? | Java 백엔드와 광장 완성 기능을 개발하고, GitHub Actions와 AWS를 이용한 배포 환경을 구성했습니다. |
+| 무엇을 맡았나요? | Java 백엔드와 광장 완성 기능을 개발하고, 백엔드는 Elastic Beanstalk에, 프론트엔드는 AWS Amplify에 배포했습니다. |
 | 가장 중요한 작업은 무엇인가요? | 광장에 기록이 모이면 AI 이미지를 만들고, S3에 보관한 뒤 참여자의 편지함으로 보내는 흐름을 구현했습니다. |
 | 어떤 결과가 있었나요? | 4인 팀으로 프로젝트를 완성했고, SW 잡브릿지-DAY 통합프로젝트 발표회에서 우수상을 받았습니다. |
 | 지금 서비스를 볼 수 있나요? | 현재 데모 운영은 종료됐습니다. 대신 코드·커밋·구조 문서와 실제 수상 증빙을 공개하고 있습니다. |
@@ -25,7 +25,7 @@
 - 관련 과정: **고용노동부 K-디지털트레이닝(벤처·스타트업 유형)**
 - 주관·수여: **(사)한국경영혁신중소기업협회(MAINBiz)**
 - 4인 팀 프로젝트로 기획, 개발, 배포 및 발표를 완료했습니다.
-- 김준영은 팀에서 **Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성과 AWS 배포**를 담당했습니다.
+- 김준영은 팀에서 **Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포와 AWS Amplify 프론트엔드 배포**를 담당했습니다.
 - 광장 참여 데이터가 완료 조건을 충족하면 AI 최종 이미지를 생성하고 참여자의 편지함으로 전달하는 흐름을 구현했습니다.
 
 > 수상은 개인 단독 수상이 아닌 4인 팀 프로젝트의 성과입니다.
@@ -47,14 +47,14 @@
 | --- | --- |
 | 프로젝트명 | 마음의 날씨 (Weather of the Heart) |
 | 프로젝트 형태 | 4인 팀 프로젝트 |
-| 개발 기간 | 2026.05 ~ 2026.07 |
-| 김준영 담당 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, GitHub Actions·YAML·환경변수 구성 및 백엔드 배포 |
+| 개발 기간 | 2026.06 |
+| 김준영 담당 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포, AWS Amplify 프론트엔드 배포 |
 | 수상 내역 | SW 잡브릿지-DAY 통합프로젝트 발표회, 2026 K-디지털트레이닝 벤처·스타트업 유형 우수상 (고용노동부 관련 과정, 한국경영혁신중소기업협회 주관·수여, 2026.07.16) |
 | Frontend | React 19, TypeScript, Vite, React Router, Tailwind CSS |
 | Backend | Java 21, Spring Boot 4, Spring Web MVC, Spring Data JPA |
 | Database | MySQL, AWS RDS for MySQL(운영 구성) |
 | AI | OpenAI API, LangChain4j, WebClient |
-| Infrastructure | AWS Elastic Beanstalk, AWS S3, AWS RDS |
+| Infrastructure | AWS Elastic Beanstalk, AWS Amplify, AWS S3, AWS RDS |
 | CI/CD | GitHub Actions, Gradle |
 | 협업 도구 | Git, GitHub |
 
@@ -120,6 +120,7 @@ flowchart LR
     Backend --> Mail["SMTP 이메일 발송"]
     Backend --> OAuth["Google · Kakao · Naver OAuth"]
 
+    Amplify["AWS Amplify"] --> Frontend
     GitHub["GitHub main branch"] --> Actions["GitHub Actions"]
     Actions --> EB["AWS Elastic Beanstalk"]
     EB --> Backend
@@ -135,6 +136,7 @@ flowchart LR
 | OpenAI API | 감정 분석 및 광장 최종 이미지 생성 |
 | AWS S3 | AI 결과 이미지와 서비스 이미지의 영속 저장 |
 | AWS Elastic Beanstalk | Spring Boot 백엔드 운영 환경 |
+| AWS Amplify | React 프론트엔드 운영 배포 환경 |
 | GitHub Actions | main 브랜치의 백엔드 변경을 빌드하고 Elastic Beanstalk에 배포 |
 | SMTP / OAuth 제공자 | 이메일 인증·재설정 메일과 소셜 로그인 처리 |
 
@@ -145,7 +147,7 @@ flowchart LR
 | 구분 | 역할 |
 | --- | --- |
 | 팀 전체 | 서비스 기획, 기능 개발, 통합, 배포, 발표 |
-| 김준영 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, GitHub Actions·YAML·환경변수 구성, 백엔드 배포 및 운영 오류 대응 |
+| 김준영 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포, AWS Amplify 프론트엔드 배포 및 운영 오류 대응 |
 
 ## 김준영의 담당 영역
 
@@ -163,6 +165,8 @@ flowchart TB
     Build --> EB["AWS Elastic Beanstalk 배포"]
     EB --> Health["GET / · GET /health"]
     EB --> RDS["AWS RDS MySQL"]
+
+    FrontBuild["React 프론트엔드"] --> Amplify["AWS Amplify 배포"]
 ```
 
 - Java 백엔드 개발
@@ -172,9 +176,10 @@ flowchart TB
 - AI 결과 이미지의 AWS S3 저장 연동
 - GitHub Actions 워크플로, 애플리케이션 YAML과 환경변수 구성
 - GitHub Actions 기반 Elastic Beanstalk 자동 배포
+- AWS Amplify 기반 프론트엔드 배포
 - 서버 포트와 헬스 체크 구성, 배포 오류 대응
 
-프론트엔드는 전체 시스템의 구성 요소이지만 김준영의 직접 담당 영역으로 표시하지 않았습니다.
+프론트엔드 **기능 개발**은 김준영의 직접 담당으로 표시하지 않았습니다. 다만 AWS Amplify를 이용한 프론트엔드 **배포**는 사용자 제공 정보에 따라 김준영 담당으로 구분했습니다.
 
 ## 김준영이 직접 구현한 기능
 
@@ -186,7 +191,8 @@ flowchart TB
 | AI 최종 이미지 | 참여 오브젝트·감정·위치를 AI 요청용 프롬프트로 구성 | `0aa3629`, `faf0209` 등 |
 | 비동기 완료 처리 | 완료 조건 검사, AI 이미지 생성, 참여자 편지 발송을 요청 흐름과 분리 | `31e75ae` |
 | S3 저장 | AWS SDK 의존성, S3 클라이언트와 이미지 저장 서비스, 완료 흐름 연동 | `9701d3c`, `2e23cf1`, `1f39b44` |
-| 배포 설정과 자동화 | GitHub Actions, 애플리케이션 YAML과 환경변수 구성; Java 21·Gradle 빌드, 배포 ZIP 생성, Elastic Beanstalk 배포 | `6695eed` 이후 배포 커밋 및 사용자 제공 담당 정보 |
+| 백엔드 배포 설정과 자동화 | GitHub Actions, 애플리케이션 YAML과 환경변수 구성; Java 21·Gradle 빌드, 배포 ZIP 생성, Elastic Beanstalk 배포 | `6695eed` 이후 배포 커밋 및 사용자 제공 담당 정보 |
+| 프론트엔드 배포 | React 프론트엔드를 AWS Amplify에 배포 | 사용자 제공 담당 정보. 전체 Git 이력에는 Amplify 설정 파일이 없음 |
 | 헬스 체크 | 서버 포트 5000, Actuator 의존성, `/`·`/health` 200 응답 구성 | `098643b`, `624c0fd`, `30d7d38` |
 
 현재 코드에서 프롬프트 입력 오브젝트는 `MAX_OBJECTS_FOR_PROMPT = 30`으로 제한됩니다. 광장 자체의 완료 기준은 각 광장의 `maxObjects` 값이며 엔티티 기본값은 8입니다. 현재 구현에는 `MAIN`·`SUPPORTING` 분류 상수가 없으므로 해당 표현은 사용하지 않았습니다.
@@ -214,6 +220,8 @@ flowchart TB
 ### 4. 배포 자동화
 
 `main` 브랜치에서 `backend/**` 또는 워크플로가 바뀌면 Java 21 Corretto 환경에서 `./gradlew clean build -x test`를 실행합니다. 실행 JAR과 `Procfile`을 ZIP으로 묶고 GitHub Secrets를 사용해 Elastic Beanstalk 애플리케이션 버전으로 배포합니다.
+
+프론트엔드는 AWS Amplify에 배포했습니다. Amplify는 AWS 콘솔에서 저장소와 빌드 설정을 연결할 수 있어 별도 YAML이 꼭 필요한 것은 아닙니다. 전체 Git 이력에는 Amplify 설정 파일이 없으므로 배포 서비스와 담당 범위는 사용자 제공 정보를 기준으로 적었습니다. 프로젝트 종료 후에는 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했습니다.
 
 구조와 시퀀스 다이어그램은 [시스템 및 배포 구조](docs/ARCHITECTURE.md)에 정리했습니다.
 
@@ -259,15 +267,15 @@ flowchart TB
 | Backend | Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Spring Validation, Spring Mail, WebClient |
 | Data | MySQL 8.4, AWS RDS for MySQL, JPA |
 | AI | OpenAI API, LangChain4j |
-| Infrastructure | AWS Elastic Beanstalk, AWS S3, AWS RDS |
+| Infrastructure | AWS Elastic Beanstalk, AWS Amplify, AWS S3, AWS RDS |
 | CI/CD | GitHub Actions, Gradle, Procfile |
 | Local environment | Docker Compose(MySQL) |
 
 ## 김준영이 직접 사용한 기술
 
-`Java 21` · `Spring Boot` · `Spring Data JPA` · `MySQL` · `Spring Transaction Event` · `@Async` · `OpenAI API` · `WebClient` · `AWS SDK for Java` · `AWS S3` · `AWS Elastic Beanstalk` · `AWS RDS` · `GitHub Actions` · `Gradle` · `Git`
+`Java 21` · `Spring Boot` · `Spring Data JPA` · `MySQL` · `Spring Transaction Event` · `@Async` · `OpenAI API` · `WebClient` · `AWS SDK for Java` · `AWS S3` · `AWS Elastic Beanstalk` · `AWS Amplify` · `AWS RDS` · `GitHub Actions` · `Gradle` · `Git`
 
-프론트엔드 기술은 프로젝트 전체 기술에는 포함했지만, 김준영의 직접 개발 기술로 표시하지 않았습니다.
+React 등 프론트엔드 기능 개발 기술은 프로젝트 전체 기술에 포함했지만 김준영의 직접 개발 기술로 표시하지 않았습니다. AWS Amplify 프론트엔드 배포는 직접 담당 범위에 포함했습니다.
 
 ## 데이터 및 요청 처리 흐름
 
@@ -303,6 +311,8 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
+    Frontend["React + Vite 프론트엔드"] --> Amplify["AWS Amplify"]
+
     Main["GitHub main"] -->|"backend 또는 workflow 변경"| Actions["GitHub Actions"]
     Actions --> JDK["Amazon Corretto JDK 21"]
     JDK --> Gradle["Gradle clean build -x test"]
@@ -315,7 +325,9 @@ flowchart LR
     App --> Health["GET / · GET /health"]
 ```
 
-원본 설정에 남아 있던 서비스 도메인은 2026년 7월 17일 기준 DNS 응답을 확인할 수 없어, 현재 상태는 **데모 운영 종료**로 표시합니다.
+백엔드 자동 배포 과정은 원본 워크플로에서 확인됩니다. 프론트엔드의 AWS Amplify 배포는 사용자 제공 정보로 확인했으며, Git 이력에 설정 파일이 없어 자동화 방식까지는 적지 않았습니다.
+
+원본 설정에 남아 있던 서비스 도메인은 2026년 7월 17일 기준 DNS 응답을 확인할 수 없었습니다. 프로젝트 종료 후 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했으므로 현재 상태는 **데모 운영 종료**로 표시합니다.
 
 ## 검증 현황과 기술적 한계
 
@@ -329,7 +341,7 @@ flowchart LR
 | 헬스 체크 | `/`, `/health`가 HTTP 200과 `OK` 반환 | DB·S3·OpenAI 상태를 확인하지 않는 얕은 생존 확인이므로 readiness 체크 분리 필요 |
 | 이미지 접근 | S3 공개 기준 URL과 객체 키를 조합해 결과 URL 생성 | 감정 기록 결과의 공개 범위를 줄이려면 비공개 버킷과 서명 URL 검토 필요 |
 | 성능·운영 지표 | 저장 트랜잭션과 외부 AI 작업을 구조적으로 분리 | 응답 시간·성공률·재시도 횟수의 실측 자료가 없어 정량 개선 수치는 주장하지 않음 |
-| 데모 | 운영 도메인의 DNS 응답이 없어 데모 운영 종료로 표시 | 개인정보를 제거한 화면 캡처와 30~60초 시연 영상 추가 필요 |
+| 데모 | 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스를 정리해 데모 운영 종료 | 개인정보를 제거한 화면 캡처와 30~60초 시연 영상 추가 필요 |
 
 ## 주요 화면
 
@@ -372,7 +384,7 @@ flowchart LR
 - 주관·수여: (사)한국경영혁신중소기업협회(MAINBiz)
 - 출품작: 마음의 날씨
 - 형태: 4인 팀 프로젝트
-- 김준영 담당: Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성 및 AWS 배포
+- 김준영 담당: Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포 및 AWS Amplify 프론트엔드 배포
 
 `마음의 날씨` 팀이 발표회에 참가해 받은 **우수상**이며, 개인 단독 수상이나 다른 등급의 상으로 확대해 표현하지 않았습니다.
 
@@ -389,7 +401,7 @@ flowchart LR
 - [원본 저장소 전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md)
 - [이미지 추가 안내](images/README.md)
 - 프로젝트 형태: 4인 팀 프로젝트
-- 김준영 담당: Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성 및 AWS 배포
+- 김준영 담당: Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포 및 AWS Amplify 프론트엔드 배포
 - 서비스 배포 주소: 데모 운영 종료
 
 ## 프로젝트를 통해 배운 점
