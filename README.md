@@ -5,9 +5,19 @@
 > [!NOTE]
 > 이 저장소는 4인 팀 프로젝트에서 김준영이 담당한 백엔드·배포 기여를 정리한 **문서형 포트폴리오**입니다. 전체 소스 코드는 [원본 팀 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)에 있으며, 다른 팀원의 작업을 개인 저장소로 복제하지 않았습니다.
 
-**빠른 탐색** · [담당 기능 상세](docs/MY_CONTRIBUTIONS.md) · [시스템·배포 구조](docs/ARCHITECTURE.md) · [전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md) · [수상 증빙](#수상-및-증빙) · [검증 현황과 한계](#검증-현황과-기술적-한계)
+**빠른 탐색** · [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md) · [담당 기능 상세](docs/MY_CONTRIBUTIONS.md) · [시스템·배포 구조](docs/ARCHITECTURE.md) · [전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md) · [수상 증빙](#수상-및-증빙) · [검증 현황과 한계](#검증-현황과-기술적-한계)
 
 **핵심 코드 바로가기** · [광장 완료 처리](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaCompletionService.java) · [AI 이미지 프롬프트](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaImagePromptBuilder.java) · [S3 이미지 저장](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/storage/S3ImageStorageService.java) · [백엔드 배포 워크플로](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/.github/workflows/deploy-backend.yml)
+
+## 30초 요약
+
+| 궁금한 점 | 답변 |
+| --- | --- |
+| 무엇을 만든 프로젝트인가요? | 감정을 기록하면 AI가 날씨와 오브젝트로 표현하고, 여러 사람의 기록을 한 장의 결과 이미지로 완성하는 서비스입니다. |
+| 무엇을 맡았나요? | Java 백엔드와 광장 완성 기능을 개발하고, GitHub Actions와 AWS를 이용한 배포 환경을 구성했습니다. |
+| 가장 중요한 작업은 무엇인가요? | 광장에 기록이 모이면 AI 이미지를 만들고, S3에 보관한 뒤 참여자의 편지함으로 보내는 흐름을 구현했습니다. |
+| 어떤 결과가 있었나요? | 4인 팀으로 프로젝트를 완성했고, SW 잡브릿지-DAY 통합프로젝트 발표회에서 우수상을 받았습니다. |
+| 지금 서비스를 볼 수 있나요? | 현재 데모 운영은 종료됐습니다. 대신 코드·커밋·구조 문서와 실제 수상 증빙을 공개하고 있습니다. |
 
 ## 주요 성과
 
@@ -373,6 +383,7 @@ flowchart LR
 ## 원본 저장소와 관련 링크
 
 - [원본 팀 프로젝트 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)
+- [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md)
 - [김준영 담당 기능 상세](docs/MY_CONTRIBUTIONS.md)
 - [시스템 및 배포 구조](docs/ARCHITECTURE.md)
 - [원본 저장소 전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md)
@@ -383,10 +394,10 @@ flowchart LR
 
 ## 프로젝트를 통해 배운 점
 
-- 커밋과 코드 리뷰를 바탕으로 여러 사람의 변경을 하나의 도메인 흐름으로 통합하는 법
-- 광장 참여·완료 조건처럼 상태 전이가 있는 백엔드 도메인 로직을 모델링하는 법
-- 데이터 저장과 외부 AI 작업을 트랜잭션 이벤트와 비동기 처리로 분리하는 기준
-- 외부 API가 늦거나 실패해도 핵심 데이터의 정합성을 우선 지키는 설계 방식
-- S3·RDS·Elastic Beanstalk의 권한, 네트워크와 환경변수를 함께 점검하는 운영 관점
-- 로그와 헬스 체크를 이용해 로컬과 배포 환경의 차이를 추적하는 방법
-- 구현 결과를 데모와 발표 자료로 전달하고, 팀 프로젝트가 외부 발표회에서 우수상을 받기까지의 협업 경험
+- 사용자의 기록은 먼저 안전하게 저장하고, 오래 걸리는 AI 작업은 그다음에 처리해야 한다는 점
+- 내 컴퓨터에서 실행되는 것과 실제 서버에서 안정적으로 운영되는 것은 다른 문제라는 점
+- 배포 오류를 해결하려면 코드뿐 아니라 설정, 권한과 실행 환경을 함께 확인해야 한다는 점
+- 팀원이 이어서 개선한 결과와 내가 직접 만든 부분을 구분해서 설명해야 한다는 점
+- 어려운 기술 이름을 나열하기보다 사용자에게 어떤 변화가 생겼는지 설명하는 것이 중요하다는 점
+
+더 솔직한 문제 해결 과정과 다시 만든다면 바꾸고 싶은 점은 [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md)에 정리했습니다.
