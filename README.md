@@ -2,6 +2,13 @@
 
 > 말하지 못한 감정을 기록하면 AI가 감정을 분석해 날씨와 오브젝트로 표현하고, 여러 사람의 기록을 하나의 시각적 결과물로 완성하는 감정 기록·공유 서비스입니다.
 
+> [!NOTE]
+> 이 저장소는 4인 팀 프로젝트에서 김준영이 담당한 백엔드·배포 기여를 정리한 **문서형 포트폴리오**입니다. 전체 소스 코드는 [원본 팀 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)에 있으며, 다른 팀원의 작업을 개인 저장소로 복제하지 않았습니다.
+
+**빠른 탐색** · [담당 기능 상세](docs/MY_CONTRIBUTIONS.md) · [시스템·배포 구조](docs/ARCHITECTURE.md) · [전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md) · [수상 증빙](#수상-및-증빙) · [검증 현황과 한계](#검증-현황과-기술적-한계)
+
+**핵심 코드 바로가기** · [광장 완료 처리](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaCompletionService.java) · [AI 이미지 프롬프트](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaImagePromptBuilder.java) · [S3 이미지 저장](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/storage/S3ImageStorageService.java) · [백엔드 배포 워크플로](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/.github/workflows/deploy-backend.yml)
+
 ## 주요 성과
 
 - 2026년 7월 16일 **SW 잡브릿지-DAY 통합프로젝트 발표회**에서 `마음의 날씨` 프로젝트로 **2026 K-디지털트레이닝 벤처·스타트업 유형 우수상**을 수상했습니다.
@@ -81,11 +88,14 @@ flowchart LR
 | --- | --- |
 | 인증 | 이메일 회원가입·인증, 로그인, 비밀번호 재설정, Google·Kakao·Naver 소셜 로그인 |
 | 개인 방 | 기억 작성·조회·수정·삭제, 감정 분석, 날씨·오브젝트 추천 및 배치, 날짜별 조회 |
+| 데이터 보호 | 개인 기억 제목·본문의 AES-256-GCM 암호화 저장 |
 | 광장 | 광장 생성·입장, 글 작성·수정·삭제, 위치 저장, 좋아요, 신고, 완료 처리 |
 | AI 결과 | 광장 감정·오브젝트 수집, 프롬프트 생성, 최종 이미지 생성, S3 저장 |
 | 편지함 | 광장 완성 결과 전달, 읽음 상태, 전체 읽음, 이미지 다운로드 |
 | 사용자 | 마이페이지, 프로필 수정, 활동 내역, 회원 탈퇴 |
 | 운영 | 공지사항, 1:1 문의, 신고 내역 확인, 글 블라인드, 경고, 사용자 정지 |
+
+AES-256-GCM 암호화는 [원본 커밋 `4aa2082`](https://github.com/guddlrdl123/WeatherOfTheHeart-/commit/4aa2082c4cef9d95d65c09c8017cbc188b1db9fc)에서 확인되는 **프로젝트 전체 기능**입니다. 기록된 작성자가 `guddlrdl123`이므로 김준영의 직접 구현으로 표시하지 않았습니다.
 
 ## 전체 시스템 구조
 
@@ -124,8 +134,8 @@ flowchart LR
 
 | 구분 | 역할 |
 | --- | --- |
-| 팀 전체 | 서비스 기획, 기능 개발, 통합, 테스트, 배포, 발표 |
-| 김준영 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, 백엔드 배포 및 운영 오류 대응 |
+| 팀 전체 | 서비스 기획, 기능 개발, 통합, 배포, 발표 |
+| 김준영 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, GitHub Actions·YAML·환경변수 구성, 백엔드 배포 및 운영 오류 대응 |
 
 ## 김준영의 담당 영역
 
@@ -297,6 +307,20 @@ flowchart LR
 
 원본 설정에 남아 있던 서비스 도메인은 2026년 7월 17일 기준 DNS 응답을 확인할 수 없어, 현재 상태는 **데모 운영 종료**로 표시합니다.
 
+## 검증 현황과 기술적 한계
+
+확인되지 않은 성능 수치나 운영 성과는 작성하지 않았습니다. 아래 내용은 2026년 7월 17일 원본 `main`의 코드와 워크플로에서 확인되는 현재 상태입니다.
+
+| 항목 | 확인된 상태 | 한계와 다음 개선 |
+| --- | --- | --- |
+| 자동 테스트 | [`BackendApplicationTests`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/test/java/com/woth/backend/BackendApplicationTests.java)의 컨텍스트 로드 1건, [`AuthServiceTest`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/test/java/com/woth/backend/auth/AuthServiceTest.java)의 OAuth 재가입 회귀 테스트 1건 | 광장 완료 조건, 중복 실행, S3 실패와 편지 중복 방지 테스트가 추가로 필요 |
+| 배포 빌드 | GitHub Actions에서 `./gradlew clean build -x test` 실행 | 배포 전 별도 테스트 작업을 추가하고 통과한 산출물만 배포하도록 개선 필요 |
+| 비동기 완료 처리 | `AFTER_COMMIT`과 `@Async`, DB의 `imageGenerating` 상태로 요청과 중복 실행을 분리 | 영속 메시지 큐와 재시도 정책이 없어 프로세스 종료·외부 API 실패 시 자동 복구가 제한적 |
+| 헬스 체크 | `/`, `/health`가 HTTP 200과 `OK` 반환 | DB·S3·OpenAI 상태를 확인하지 않는 얕은 생존 확인이므로 readiness 체크 분리 필요 |
+| 이미지 접근 | S3 공개 기준 URL과 객체 키를 조합해 결과 URL 생성 | 감정 기록 결과의 공개 범위를 줄이려면 비공개 버킷과 서명 URL 검토 필요 |
+| 성능·운영 지표 | 저장 트랜잭션과 외부 AI 작업을 구조적으로 분리 | 응답 시간·성공률·재시도 횟수의 실측 자료가 없어 정량 개선 수치는 주장하지 않음 |
+| 데모 | 운영 도메인의 DNS 응답이 없어 데모 운영 종료로 표시 | 개인정보를 제거한 화면 캡처와 30~60초 시연 영상 추가 필요 |
+
 ## 주요 화면
 
 수상 증빙 이미지는 추가했으며, 서비스 화면은 개인정보 확인 후 추가할 예정입니다.
@@ -351,6 +375,7 @@ flowchart LR
 - [원본 팀 프로젝트 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)
 - [김준영 담당 기능 상세](docs/MY_CONTRIBUTIONS.md)
 - [시스템 및 배포 구조](docs/ARCHITECTURE.md)
+- [원본 저장소 전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md)
 - [이미지 추가 안내](images/README.md)
 - 프로젝트 형태: 4인 팀 프로젝트
 - 김준영 담당: Java 백엔드 개발, GitHub Actions·YAML·환경변수 구성 및 AWS 배포

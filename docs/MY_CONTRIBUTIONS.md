@@ -38,16 +38,16 @@
 
 | 파일 | `bamkkayo` 작성 줄 | 의미 |
 | --- | ---: | --- |
-| `PlazaEntry.java` | 75 | 광장 참여 데이터 모델 |
-| `PlazaRepository.java` | 27 | 광장 조회·완료 상태 저장 기반 |
-| `PlazaEntryRepository.java` | 17 | 광장 참여·중복 검사 조회 기반 |
-| `PlazaEntryCreatedEvent.java` | 4 | 저장 이후 완료 검사 이벤트 |
-| `PlazaCompletionService.java` | 149 | 완료 조건·AI 이미지·편지 처리 핵심 |
-| `PlazaImagePromptBuilder.java` | 231 | 광장 이미지 프롬프트의 중심 구현 |
-| `S3ImageStorageService.java` | 68 | S3 이미지 업로드·다운로드 기반 |
-| `S3Config.java` | 20 | AWS SDK S3 클라이언트 구성 |
-| `HealthCheckController.java` | 23 | `/`, `/health` 상태 응답 |
-| `.github/workflows/deploy-backend.yml` | 56 | 전체 백엔드 자동 배포 워크플로 |
+| [`PlazaEntry.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaEntry.java) | 75 | 광장 참여 데이터 모델 |
+| [`PlazaRepository.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaRepository.java) | 27 | 광장 조회·완료 상태 저장 기반 |
+| [`PlazaEntryRepository.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaEntryRepository.java) | 17 | 광장 참여·중복 검사 조회 기반 |
+| [`PlazaEntryCreatedEvent.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaEntryCreatedEvent.java) | 4 | 저장 이후 완료 검사 이벤트 |
+| [`PlazaCompletionService.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaCompletionService.java) | 149 | 완료 조건·AI 이미지·편지 처리 핵심 |
+| [`PlazaImagePromptBuilder.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaImagePromptBuilder.java) | 231 | 광장 이미지 프롬프트의 중심 구현 |
+| [`S3ImageStorageService.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/storage/S3ImageStorageService.java) | 68 | S3 이미지 업로드·다운로드 기반 |
+| [`S3Config.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/config/S3Config.java) | 20 | AWS SDK S3 클라이언트 구성 |
+| [`HealthCheckController.java`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/global/health/HealthCheckController.java) | 23 | `/`, `/health` 상태 응답 |
+| [`deploy-backend.yml`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/.github/workflows/deploy-backend.yml) | 56 | 전체 백엔드 자동 배포 워크플로 |
 
 YAML·환경변수 설정은 사용자 제공 정보상 김준영 담당입니다. `application.yaml`은 이후 팀 기능이 추가되면서 여러 작성자의 변경이 섞였지만, 배포를 위한 서버 포트, DB·OpenAI·메일·AWS 설정의 환경변수화와 워크플로 구성은 김준영 담당으로 정리했습니다.
 
@@ -317,7 +317,7 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 
 - `main`과 `--all`의 도달 가능한 커밋 수가 모두 335개로, 별도 원격 브랜치에만 숨은 커밋은 없었습니다.
 - Git 작성자 식별자는 `bamkkayo`, `guddlrdl123`, `Change03`, `eunjung3` 네 종류입니다.
-- `Co-authored-by` 트레일러는 확인되지 않았습니다.
+- `Co-authored-by` 트레일러는 9개 확인됐으며 모두 `Claude Opus 4.8 <noreply@anthropic.com>`입니다. 김준영을 공동 작성자로 표시한 트레일러는 없어 개인 기여 커밋 수에 더하지 않았습니다.
 - `bamkkayo <junyeong2107@gmail.com>` 직접 작성 커밋은 63개입니다.
 - 그중 3개는 GitHub 웹에서 반영돼 커미터가 `GitHub <noreply@github.com>`로 기록됐지만 작성자는 여전히 `bamkkayo`입니다.
 - 다른 세 작성자 이름의 커밋을 김준영 개인 작업이라고 증명할 메타데이터는 없어 직접 기여로 귀속하지 않았습니다.

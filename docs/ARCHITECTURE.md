@@ -3,6 +3,7 @@
 이 문서는 `마음의 날씨`의 전체 시스템과 김준영 담당 영역, 광장 완료 처리와 AWS 배포 흐름을 분리해 설명합니다.
 
 - 원본 저장소: [guddlrdl123/WeatherOfTheHeart-](https://github.com/guddlrdl123/WeatherOfTheHeart-)
+- 전체 데이터 모델: [원본 저장소 DB ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md)
 - 분석 기준: 2026년 7월 17일 `main`
 - 프로젝트 형태: 4인 팀 프로젝트
 - 김준영 담당: Java 백엔드, 광장 완료·AI 이미지 흐름, S3 저장, GitHub Actions·YAML·환경변수 구성, AWS 백엔드 배포
@@ -277,7 +278,7 @@ flowchart LR
 | 트리거 | `push` to `main`, `workflow_dispatch` |
 | 경로 필터 | `backend/**`, `.github/workflows/**` |
 | Java | 21, Corretto |
-| 빌드 | Gradle clean build, 테스트 제외 |
+| 빌드 | `./gradlew clean build -x test` |
 | 배포 파일 | `application.jar`, `Procfile`, `deploy.zip` |
 | 버전 라벨 | GitHub run ID와 run attempt 조합 |
 | AWS 인증 | GitHub Secrets |
@@ -327,4 +328,7 @@ flowchart TB
 - RDS 보안 그룹, IAM 정책과 Elastic Beanstalk 환경 속성 자체는 저장소에 포함되지 않으므로 코드의 환경변수 참조와 사용자 제공 정보를 기준으로 설명했습니다.
 - `MAIN`, `SUPPORTING` 오브젝트 역할 구분은 현재 코드에 없어 구조도에 넣지 않았습니다.
 - 관리자 신고·경고·정지 기능은 프로젝트 전체 구조에 포함하지만 김준영의 직접 구현 영역으로 표시하지 않았습니다.
-- 화면과 상장 이미지는 개인정보 확인 후 [images 안내](../images/README.md)에 따라 추가해야 합니다.
+- 백엔드 테스트 파일은 컨텍스트 로드와 인증 회귀 테스트 각 1건이며, 배포 워크플로는 테스트를 제외하므로 자동 검증 범위가 좁습니다.
+- `@Async` 완료 처리는 애플리케이션 프로세스 안에서 실행되며, 영속 메시지 큐나 자동 재시도 정책은 확인되지 않았습니다.
+- S3 결과 URL은 공개 기준 URL을 조합하는 방식이므로, 민감한 결과 이미지에는 비공개 버킷과 서명 URL 방식이 더 적합합니다.
+- 우수상 증빙은 추가됐고, 실제 서비스 화면과 시연 영상은 개인정보 확인 후 [images 안내](../images/README.md)에 따라 추가해야 합니다.

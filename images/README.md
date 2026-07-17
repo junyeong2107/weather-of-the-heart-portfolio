@@ -15,10 +15,13 @@ README에는 존재하는 `award.jpg`만 직접 표시하며, 아직 없는 서�
 | `plaza-result.png` | 광장 완료 후 생성된 최종 이미지 | 1200×1200 이상, PNG | 모델 출력물 공개 가능 여부 확인 |
 | `mailbox.png` | 광장 완성 이미지가 도착한 편지함 | 1440×900 이상, PNG | 수신자·참여 기록·날짜 익명화 |
 | `admin-report.png` | 관리자 신고 상세와 처리 화면 | 1440×900 이상, PNG | 신고자·작성자·신고 내용 익명화 |
+| `demo.mp4` | 개인 방 기록부터 광장 완성·편지함까지 30~60초 시연 | 1080p, MP4 | 실제 계정·감정 기록·운영 주소 제거 |
 | `architecture.png` | 발표 자료에 사용한 전체 시스템 구조 이미지 | 1600px 이상, PNG | 계정 번호·내부 주소·버킷명 제거 |
 | `deployment.png` | GitHub Actions와 AWS 배포 구조 이미지 | 1600px 이상, PNG | AWS 리소스 식별자와 도메인 확인 |
 
 `architecture.png`와 `deployment.png`는 README와 `docs/ARCHITECTURE.md`의 Mermaid 다이어그램으로 이미 대체할 수 있으므로 선택 사항입니다.
+
+채용 검토용 최소 구성은 `private-room.png`, `plaza.png`, `plaza-result.png`, `mailbox.png`, `demo.mp4`입니다. 실제 자료가 확보되기 전에는 빈 파일이나 생성형 이미지로 대체하지 않습니다.
 
 ## 수상 증빙 파일
 
