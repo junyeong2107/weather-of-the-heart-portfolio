@@ -27,7 +27,7 @@ AI 이미지 생성은 일반적인 데이터 저장보다 오래 걸리고 실�
 
 그래서 사용자의 기록을 먼저 저장한 뒤, 이미지 생성은 별도 작업으로 이어지도록 분리했습니다. 덕분에 꼭 성공해야 하는 기록 저장과 시간이 오래 걸릴 수 있는 AI 작업을 따로 다룰 수 있었습니다.
 
-다만 현재 구조에는 작업을 오래 보관하는 대기열과 자동 재시도가 없습니다. 서버가 중간에 종료되거나 외부 서비스가 계속 실패할 때 자동으로 복구하는 기능은 앞으로 보완해야 합니다.
+개별 OpenAI 요청에는 일시적인 오류를 다시 시도하는 처리가 있습니다. 다만 완료 작업 자체를 오래 보관하는 대기열과 서버 재시작 이후의 자동 복구는 없습니다. 서버가 중간에 종료되거나 외부 서비스가 계속 실패할 때 작업을 이어가는 기능은 앞으로 보완해야 합니다.
 
 ### 서버를 다시 배포해도 이미지는 남아야 했습니다
 
@@ -43,7 +43,7 @@ AI 이미지 생성은 일반적인 데이터 저장보다 오래 걸리고 실�
 
 백엔드는 Elastic Beanstalk, 프론트엔드는 AWS Amplify로 나누어 배포했습니다. Amplify는 AWS 콘솔에서 설정할 수 있어 별도 YAML이 꼭 필요하지 않습니다. 전체 Git 이력에는 Amplify 설정 파일이 없으므로 실제 사용한 배포 서비스와 제 담당 범위만 적었습니다. 프로젝트가 끝난 뒤에는 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했습니다.
 
-다만 현재 상태 확인은 서버가 응답하는지만 검사합니다. 데이터베이스나 S3까지 정상인지 확인하는 더 깊은 검사는 구현하지 못했습니다.
+직접 추가한 `/`와 `/health`는 서버가 응답하는지 확인합니다. 별도로 Actuator의 `/actuator/health`에서는 자동 등록된 데이터베이스·메일 등의 상태를 확인할 수 있습니다. 현재 실행 안내는 이 경로를 우선 사용하며, S3·OpenAI와 실제 기능이 정상인지까지 확인하는 검사는 앞으로 보완해야 합니다.
 
 ### 저장이 끝난 뒤에 완성 조건을 확인해야 했습니다
 
@@ -78,3 +78,4 @@ AI 이미지 생성은 일반적인 데이터 저장보다 오래 걸리고 실�
 - [광장 완료 처리 코드](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaCompletionService.java)
 - [S3 이미지 저장 코드](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/storage/S3ImageStorageService.java)
 - [백엔드 배포 설정](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/.github/workflows/deploy-backend.yml)
+

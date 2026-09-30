@@ -1,11 +1,11 @@
 # 마음의 날씨
 
-> 말하지 못한 감정을 기록하면 AI가 감정을 분석해 날씨와 오브젝트로 표현하고, 여러 사람의 기록을 하나의 시각적 결과물로 완성하는 감정 기록·공유 서비스입니다.
+> 말하지 못한 감정을 기록하면 AI가 글의 정서에 어울리는 날씨를 추천하고, 사용자가 고른 오브젝트로 기억을 남기는 감정 기록·공유 서비스입니다. 광장에서는 여러 사람의 기록을 한 장의 AI 이미지로 완성해 편지함에 전달합니다.
 
 > [!NOTE]
 > 이 저장소는 4인 팀 프로젝트에서 김준영이 담당한 백엔드 개발과 AWS 배포 기여를 정리한 **문서형 포트폴리오**입니다. 전체 소스 코드는 [원본 팀 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)에 있으며, 다른 팀원의 작업을 개인 저장소로 복제하지 않았습니다.
 
-**빠른 탐색** · [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md) · [담당 기능 상세](docs/MY_CONTRIBUTIONS.md) · [시스템·배포 구조](docs/ARCHITECTURE.md) · [전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md) · [수상 증빙](#수상-및-증빙) · [검증 현황과 한계](#검증-현황과-기술적-한계)
+**빠른 탐색** · [실행·배포 안내](docs/RUN_GUIDE.md) · [최신 점검 근거](docs/README_AUDIT.md) · [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md) · [담당 기능 상세](docs/MY_CONTRIBUTIONS.md) · [시스템·배포 구조](docs/ARCHITECTURE.md) · [전체 ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md) · [수상 증빙](#수상-및-증빙) · [검증 현황과 한계](#검증-현황과-기술적-한계)
 
 **핵심 코드 바로가기** · [광장 완료 처리](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaCompletionService.java) · [AI 이미지 프롬프트](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/plaza/PlazaImagePromptBuilder.java) · [S3 이미지 저장](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/main/java/com/woth/backend/storage/S3ImageStorageService.java) · [백엔드 배포 워크플로](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/.github/workflows/deploy-backend.yml)
 
@@ -13,7 +13,7 @@
 
 | 궁금한 점 | 답변 |
 | --- | --- |
-| 무엇을 만든 프로젝트인가요? | 감정을 기록하면 AI가 날씨와 오브젝트로 표현하고, 여러 사람의 기록을 한 장의 결과 이미지로 완성하는 서비스입니다. |
+| 무엇을 만든 프로젝트인가요? | 글의 정서에 맞는 날씨와 선택한 오브젝트로 기억을 시각화하고, 광장 참여 기록을 한 장의 AI 이미지로 완성하는 서비스입니다. |
 | 무엇을 맡았나요? | Java 백엔드와 광장 완성 기능을 개발하고, 백엔드는 Elastic Beanstalk에, 프론트엔드는 AWS Amplify에 배포했습니다. |
 | 가장 중요한 작업은 무엇인가요? | 광장에 기록이 모이면 AI 이미지를 만들고, S3에 보관한 뒤 참여자의 편지함으로 보내는 흐름을 구현했습니다. |
 | 어떤 결과가 있었나요? | 4인 팀으로 프로젝트를 완성했고, SW 잡브릿지-DAY 통합프로젝트 발표회에서 우수상을 받았습니다. |
@@ -32,12 +32,12 @@
 
 ## 프로젝트 개요
 
-`마음의 날씨`는 감정을 텍스트 목록으로만 남기는 대신, AI 분석 결과를 날씨와 오브젝트로 시각화하는 서비스입니다.
+`마음의 날씨`는 글의 정서를 AI가 분석한 날씨와 사용자가 선택한 오브젝트를 함께 보여 주는 서비스입니다.
 
-- **개인 방**: 자신의 감정을 기록하고, 추천받은 날씨와 오브젝트를 배치해 날짜별로 돌아봅니다.
+- **개인 방**: 기억을 작성하고 오브젝트를 선택하면, 백엔드가 AI로 날씨를 분석해 저장합니다. 기록은 월별 개인 방과 날짜별 캘린더에서 돌아봅니다.
 - **광장**: 여러 사용자의 감정과 오브젝트가 하나의 공간에 쌓입니다.
 - **광장 완성**: 설정된 참여 조건을 충족하거나 방장이 종료하면 참여 데이터를 모아 AI 최종 이미지를 생성합니다.
-- **편지함**: 완성 이미지와 참여 당시 기록을 각 참여자에게 전달합니다.
+- **편지함**: 이미지 생성과 저장을 마친 뒤 완성 결과와 참여 당시 기록을 전달합니다. 완료 요청 직후부터 이미지가 즉시 보이는 구조는 아닙니다.
 
 공개 반응 수치를 중심으로 하는 SNS보다, 함께 만든 공간의 분위기와 시각적 표현을 통해 감정을 공유하는 데 초점을 맞췄습니다.
 
@@ -51,9 +51,9 @@
 | 김준영 담당 | Java 백엔드 개발, 광장 핵심 로직, AI 이미지 생성 연동, AWS 이미지 저장, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포, AWS Amplify 프론트엔드 배포 |
 | 수상 내역 | SW 잡브릿지-DAY 통합프로젝트 발표회, 2026 K-디지털트레이닝 벤처·스타트업 유형 우수상 (고용노동부 관련 과정, 한국경영혁신중소기업협회 주관·수여, 2026.07.16) |
 | Frontend | React 19, TypeScript, Vite, React Router, Tailwind CSS |
-| Backend | Java 21, Spring Boot 4, Spring Web MVC, Spring Data JPA |
+| Backend | Java 21, **Spring Boot 4.0.6**, Spring Web MVC, Spring Data JPA, Actuator |
 | Database | MySQL, AWS RDS for MySQL(운영 구성) |
-| AI | OpenAI API, LangChain4j, WebClient |
+| AI | OpenAI API + WebClient. LangChain4j OpenAI starter는 빌드 의존성에 선언 |
 | Infrastructure | AWS Elastic Beanstalk, AWS Amplify, AWS S3, AWS RDS |
 | CI/CD | GitHub Actions, Gradle |
 | 협업 도구 | Git, GitHub |
@@ -64,7 +64,7 @@
 
 이 프로젝트는 다음 방식으로 문제를 풀었습니다.
 
-1. 사용자가 작성한 감정을 AI가 감정·날씨·오브젝트 정보로 구조화합니다.
+1. AI가 사용자가 작성한 글의 정서를 분석해 날씨 키·이름·확신도·선정 이유를 반환합니다.
 2. 개인 기록을 오브젝트와 날씨가 있는 방으로 시각화합니다.
 3. 광장에서는 여러 사용자의 기록을 하나의 공간에 축적합니다.
 4. 광장이 완료되면 참여 데이터를 하나의 이미지로 재해석해 공동 결과물로 남깁니다.
@@ -73,23 +73,16 @@
 ## 주요 사용자 흐름
 
 ```mermaid
-flowchart LR
-    subgraph PrivateRoom["개인 방 흐름"]
-        P1["로그인"] --> P2["감정 기록 작성"]
-        P2 --> P3["AI 감정 분석"]
-        P3 --> P4["날씨·오브젝트 추천"]
-        P4 --> P5["개인 방에 오브젝트 배치"]
-        P5 --> P6["날짜별 기록 조회"]
-    end
-
-    subgraph PlazaFlow["광장 흐름"]
-        G1["광장 생성 또는 입장"] --> G2["감정·오브젝트 등록"]
-        G2 --> G3["여러 사용자의 기록 축적"]
-        G3 --> G4["완료 조건 확인"]
-        G4 --> G5["AI 최종 이미지 생성"]
-        G5 --> G6["AWS S3 저장"]
-        G6 --> G7["참여자 편지함으로 전달"]
-    end
+flowchart TB
+    Login["로그인"] --> Space{"기록 공간"}
+    Space --> Private["개인 기억과 오브젝트 선택"]
+    Private --> Analyze["AI 날씨 분석과 암호화 저장"]
+    Analyze --> Room["월별 방과 날짜별 조회"]
+    Space --> Entry["광장 참여 글과 오브젝트"]
+    Entry --> Ready{"완료 조건 또는 방장 종료"}
+    Ready -->|"완료"| Result["AI 이미지 생성과 S3 저장"]
+    Ready -->|"대기"| Entry
+    Result --> Letter["참여자 편지함"]
 ```
 
 ## 주요 기능
@@ -97,33 +90,29 @@ flowchart LR
 | 영역 | 기능 |
 | --- | --- |
 | 인증 | 이메일 회원가입·인증, 로그인, 비밀번호 재설정, Google·Kakao·Naver 소셜 로그인 |
-| 개인 방 | 기억 작성·조회·수정·삭제, 감정 분석, 날씨·오브젝트 추천 및 배치, 날짜별 조회 |
+| 개인 방 | 기억 작성·조회·수정·삭제, AI 날씨 분석, 오브젝트 선택·배치, 날짜별 조회 |
 | 데이터 보호 | 개인 기억 제목·본문의 AES-256-GCM 암호화 저장 |
 | 광장 | 광장 생성·입장, 글 작성·수정·삭제, 위치 저장, 좋아요, 신고, 완료 처리 |
 | AI 결과 | 광장 감정·오브젝트 수집, 프롬프트 생성, 최종 이미지 생성, S3 저장 |
-| 편지함 | 광장 완성 결과 전달, 읽음 상태, 전체 읽음, 이미지 다운로드 |
+| 편지함 | 광장 완성 결과 전달, 읽음 상태, 전체 읽음, 편지 삭제, 이미지 다운로드 |
 | 사용자 | 마이페이지, 프로필 수정, 활동 내역, 회원 탈퇴 |
 | 운영 | 공지사항, 1:1 문의, 신고 내역 확인, 글 블라인드, 경고, 사용자 정지 |
+
+개인 기억의 제목·본문은 JPA 변환기를 통해 **AES-256-GCM**으로 암호화되어 저장됩니다. 키는 Base64로 인코딩한 32바이트 값이며, 암호화마다 새로운 12바이트 IV를 사용합니다. 이 보호 범위는 DB에 저장되는 개인 기억의 제목·본문입니다. AI 분석 과정에서는 백엔드가 입력 글을 OpenAI API로 전송합니다.
 
 AES-256-GCM 암호화는 [원본 커밋 `4aa2082`](https://github.com/guddlrdl123/WeatherOfTheHeart-/commit/4aa2082c4cef9d95d65c09c8017cbc188b1db9fc)에서 확인되는 **프로젝트 전체 기능**입니다. 기록된 작성자가 `guddlrdl123`이므로 김준영의 직접 구현으로 표시하지 않았습니다.
 
 ## 전체 시스템 구조
 
 ```mermaid
-flowchart LR
-    User["사용자"] --> Frontend["React + TypeScript Frontend"]
-    Frontend -->|"REST API"| Backend["Spring Boot Backend"]
-
+flowchart TB
+    User["사용자"] --> Frontend["React·Vite / AWS Amplify"]
+    Frontend -->|"REST API"| Backend["Spring Boot 4.0.6 / Elastic Beanstalk"]
+    Actions["GitHub Actions"] -->|"실행 JAR 배포"| Backend
     Backend --> Database["MySQL / AWS RDS"]
     Backend --> OpenAI["OpenAI API"]
     Backend --> S3["AWS S3"]
-    Backend --> Mail["SMTP 이메일 발송"]
-    Backend --> OAuth["Google · Kakao · Naver OAuth"]
-
-    Amplify["AWS Amplify"] --> Frontend
-    GitHub["GitHub main branch"] --> Actions["GitHub Actions"]
-    Actions --> EB["AWS Elastic Beanstalk"]
-    EB --> Backend
+    Backend --> External["SMTP / Google·Kakao·Naver OAuth"]
 ```
 
 ## 구성 요소별 역할
@@ -153,20 +142,16 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    API["Spring Boot 광장 API"] --> Entry["광장 참여 데이터 저장"]
-    Entry --> Event["트랜잭션 완료 이벤트"]
-    Event --> Check["광장 완료 조건 검사"]
-    Check --> Prompt["AI 이미지 프롬프트 구성"]
-    Prompt --> Generate["OpenAI 이미지 생성 요청"]
-    Generate --> S3["AWS S3 결과 저장"]
-    S3 --> Letter["참여자 편지함 전달"]
-
-    Actions["GitHub Actions"] --> Build["Gradle Build"]
-    Build --> EB["AWS Elastic Beanstalk 배포"]
-    EB --> Health["GET / · GET /health"]
-    EB --> RDS["AWS RDS MySQL"]
-
-    FrontBuild["React 프론트엔드"] --> Amplify["AWS Amplify 배포"]
+    Request["광장 참여 요청"] --> Save["데이터 저장"]
+    Save --> Event["커밋 이후 비동기 이벤트"]
+    Event --> Ready{"완료 조건 확인"}
+    Ready -->|"충족 또는 방장 종료"| AI["프롬프트 구성과 AI 이미지 생성"]
+    Ready -->|"미충족"| Wait["추가 참여 대기"]
+    AI --> S3["S3 업로드"]
+    S3 --> Mailbox["완성 편지 저장"]
+    Actions["GitHub Actions"] --> EB["Elastic Beanstalk / 5000"]
+    EB --> Health["Actuator 상태 확인"]
+    Amplify["Amplify / Vite dist"] --> Web["프론트엔드 제공"]
 ```
 
 - Java 백엔드 개발
@@ -193,7 +178,7 @@ flowchart TB
 | S3 저장 | AWS SDK 의존성, S3 클라이언트와 이미지 저장 서비스, 완료 흐름 연동 | `9701d3c`, `2e23cf1`, `1f39b44` |
 | 백엔드 배포 설정과 자동화 | GitHub Actions, 애플리케이션 YAML과 환경변수 구성; Java 21·Gradle 빌드, 배포 ZIP 생성, Elastic Beanstalk 배포 | `6695eed` 이후 배포 커밋 및 사용자 제공 담당 정보 |
 | 프론트엔드 배포 | React 프론트엔드를 AWS Amplify에 배포 | 사용자 제공 담당 정보. 전체 Git 이력에는 Amplify 설정 파일이 없음 |
-| 헬스 체크 | 서버 포트 5000, Actuator 의존성, `/`·`/health` 200 응답 구성 | `098643b`, `624c0fd`, `30d7d38` |
+| 헬스 체크 | 서버 포트 5000, Actuator 의존성, `/`·`/health` 응답 구현. 상태 확인 안내는 `/actuator/health` 중심으로 구분 | `098643b`, `624c0fd`, `30d7d38` 및 현재 설정 |
 
 현재 코드에서 프롬프트 입력 오브젝트는 `MAX_OBJECTS_FOR_PROMPT = 30`으로 제한됩니다. 광장 자체의 완료 기준은 각 광장의 `maxObjects` 값이며 엔티티 기본값은 8입니다. 현재 구현에는 `MAIN`·`SUPPORTING` 분류 상수가 없으므로 해당 표현은 사용하지 않았습니다.
 
@@ -209,7 +194,7 @@ flowchart TB
 
 ### 2. 광장 완료와 중복 실행 제어
 
-완료 서비스는 새 트랜잭션에서 광장과 참여 글을 읽고 `entries.size() >= plaza.maxObjects`인지 확인합니다. `imageGenerating` 상태로 이미지 생성 작업을 잠그고, 방장 강제 종료 시에는 `forceComplete` 이벤트로 동일한 완료 흐름을 재사용합니다.
+완료 서비스는 새 트랜잭션에서 광장과 참여 글을 읽고 `entries.size() >= plaza.maxObjects`인지 확인합니다. 생성 중에는 `imageGenerating` 상태를 확인해 추가 작업을 제한하고, 방장 종료 시에는 `forceComplete` 이벤트로 같은 완료 흐름을 재사용합니다. 상태 확인과 변경은 DB의 원자적 잠금으로 구현되어 있지 않아, 동시 실행을 완전히 막는 보장으로 확대해 설명하지 않습니다.
 
 ### 3. AI 프롬프트와 결과 저장
 
@@ -221,7 +206,7 @@ flowchart TB
 
 `main` 브랜치에서 `backend/**` 또는 워크플로가 바뀌면 Java 21 Corretto 환경에서 `./gradlew clean build -x test`를 실행합니다. 실행 JAR과 `Procfile`을 ZIP으로 묶고 GitHub Secrets를 사용해 Elastic Beanstalk 애플리케이션 버전으로 배포합니다.
 
-프론트엔드는 AWS Amplify에 배포했습니다. Amplify는 AWS 콘솔에서 저장소와 빌드 설정을 연결할 수 있어 별도 YAML이 꼭 필요한 것은 아닙니다. 전체 Git 이력에는 Amplify 설정 파일이 없으므로 배포 서비스와 담당 범위는 사용자 제공 정보를 기준으로 적었습니다. 프로젝트 종료 후에는 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했습니다.
+프론트엔드는 AWS Amplify에 배포했습니다. 현재 원본 소스는 React·Vite이며 `npm ci` → `npm run build`로 `frontend/dist`를 생성합니다. Amplify의 재현용 빌드 설정은 `appRoot: frontend`, 산출물 `dist`로 정리했습니다. 당시 콘솔 설정 원본은 저장소에 없으므로, 실제 배포 경험과 재현용 설정 예시는 구분합니다. 프로젝트 종료 후에는 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했습니다.
 
 구조와 시퀀스 다이어그램은 [시스템 및 배포 구조](docs/ARCHITECTURE.md)에 정리했습니다.
 
@@ -229,7 +214,7 @@ flowchart TB
 
 ### 1. AI 이미지 생성으로 참여 요청이 길어지는 문제
 
-- **문제**: 참여 데이터 저장과 이미지 생성이 한 요청에 묶이면 최대 수십 초가 걸리는 외부 API 응답 때문에 사용자가 오래 기다릴 수 있었습니다.
+- **문제**: 참여 데이터 저장과 이미지 생성이 한 요청에 묶이면 응답 시간이 긴 외부 API 호출 때문에 사용자가 오래 기다릴 수 있었습니다.
 - **원인 분석**: 핵심 데이터 저장과 부가 결과 생성의 처리 시간·실패 조건이 서로 달랐습니다.
 - **해결 방법**: 참여 글 저장 후 이벤트를 발행하고, 트랜잭션 커밋 이후 별도 비동기 흐름에서 완료 검사와 이미지 생성을 실행했습니다.
 - **결과**: 저장 트랜잭션과 외부 AI 작업의 실패 범위를 분리하고 요청 지연을 줄일 수 있는 구조를 만들었습니다.
@@ -247,7 +232,7 @@ flowchart TB
 
 - **문제**: 로컬에서 실행되던 서버가 Elastic Beanstalk에서는 빌드 산출물, 포트, 환경변수와 외부 리소스 권한 차이 때문에 정상화되지 않을 수 있었습니다.
 - **원인 분석**: 배포 ZIP 구조, 실행 명령, 기본 포트, DB 연결, S3 권한과 헬스 체크가 함께 맞아야 했습니다.
-- **해결 방법**: 실행 JAR과 `Procfile`을 명시적으로 패키징하고 서버 포트를 5000으로 맞췄으며, 환경별 값을 환경변수로 분리하고 `/`·`/health` 응답을 추가했습니다.
+- **해결 방법**: 실행 JAR과 `Procfile`을 명시적으로 패키징하고 서버 포트를 5000으로 맞췄으며, 환경별 값을 환경변수로 분리하고 `/`·`/health` 응답을 추가했습니다. 현재 실행 안내에서는 Actuator 상태 확인과 고정 `OK` 응답의 차이를 함께 설명합니다.
 - **결과**: 빌드부터 배포·상태 확인까지 반복 가능한 흐름을 구성했습니다.
 - **배운 점**: 운영 장애는 코드만이 아니라 패키징, 네트워크, 권한, 설정과 관측 지점을 함께 봐야 합니다.
 
@@ -263,13 +248,15 @@ flowchart TB
 
 | 구분 | 기술 |
 | --- | --- |
-| Frontend | React 19, TypeScript, Vite, React Router, Tailwind CSS, Lucide React, html-to-image |
-| Backend | Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Spring Validation, Spring Mail, WebClient |
-| Data | MySQL 8.4, AWS RDS for MySQL, JPA |
-| AI | OpenAI API, LangChain4j |
+| Frontend | React 19.2.6, TypeScript 6, Vite 8.0.14, React Router 7, Tailwind CSS 3, Lucide React, html-to-image |
+| Backend | Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Validation, Mail, Actuator, WebClient, BCrypt |
+| Data | 로컬 MySQL 8.4(`compose.yaml`), 운영 구성 AWS RDS for MySQL, JPA |
+| AI | OpenAI `gpt-4.1-mini`(글 분석), `gpt-image-1`(광장 이미지), WebClient. LangChain4j starter 0.31.0은 의존성 선언 |
 | Infrastructure | AWS Elastic Beanstalk, AWS Amplify, AWS S3, AWS RDS |
-| CI/CD | GitHub Actions, Gradle, Procfile |
+| CI/CD | GitHub Actions, Gradle Wrapper 9.4.1, Procfile |
 | Local environment | Docker Compose(MySQL) |
+
+버전은 [원본 `main` 커밋 `40a127e`](https://github.com/guddlrdl123/WeatherOfTheHeart-/commit/40a127ecd8baf8b110a438e9ef1a858a0bf6e77b)의 `build.gradle`, Gradle Wrapper, `package-lock.json`을 기준으로 확인했습니다. 공개 소스와 [2026년 7월 1일 배포 성공 기록](https://github.com/guddlrdl123/WeatherOfTheHeart-/actions/runs/28488782913)의 대상 커밋 모두 Spring Boot **4.0.6**을 선언합니다. RDS의 실제 엔진 버전은 로컬 MySQL 이미지 버전과 구분해 관리합니다.
 
 ## 김준영이 직접 사용한 기술
 
@@ -281,64 +268,82 @@ React 등 프론트엔드 기능 개발 기술은 프로젝트 전체 기술에 
 
 ```mermaid
 sequenceDiagram
-    actor User as 사용자
-    participant FE as React Frontend
+    participant FE as 프론트엔드
     participant PS as PlazaService
     participant DB as MySQL
     participant PCS as PlazaCompletionService
-    participant AI as OpenAI API
-    participant S3 as AWS S3
-    participant MB as MailboxService
-
-    User->>FE: 감정·오브젝트 등록
-    FE->>PS: 광장 참여 요청
-    PS->>DB: PlazaEntry 저장
-    DB-->>PS: 커밋
-    PS-->>FE: 저장 결과 응답
-    PS-->>PCS: 완료 이벤트
-    PCS->>DB: 완료 조건과 참여 데이터 조회
-    alt 완료 조건 충족
-        PCS->>AI: 이미지 생성 프롬프트 요청
-        AI-->>PCS: 이미지 data URL
-        PCS->>S3: 이미지 업로드
-        S3-->>PCS: 이미지 URL
-        PCS->>MB: 참여자별 편지 생성
-        MB->>DB: 편지 저장
+    FE->>PS: 광장 글과 오브젝트 등록
+    PS->>DB: 참여 검증과 글 저장
+    PS->>PS: 완료 이벤트 발행
+    DB-->>PS: 트랜잭션 커밋
+    par 요청 응답
+        PS-->>FE: 저장 결과
+    and 커밋 이후 비동기 처리
+        PS-->>PCS: AFTER_COMMIT 이벤트
+        PCS->>DB: 완료 조건과 수신자 조회
+        alt 완료 조건 충족 또는 방장 종료
+            PCS->>PCS: AI 이미지 생성과 S3 업로드
+            PCS->>DB: MailboxService로 편지 저장
+        else 완료 조건 미충족
+            PCS->>PCS: 추가 참여 대기
+        end
     end
 ```
 
 ## 배포 구조
 
 ```mermaid
-flowchart LR
-    Frontend["React + Vite 프론트엔드"] --> Amplify["AWS Amplify"]
-
-    Main["GitHub main"] -->|"backend 또는 workflow 변경"| Actions["GitHub Actions"]
-    Actions --> JDK["Amazon Corretto JDK 21"]
-    JDK --> Gradle["Gradle clean build -x test"]
-    Gradle --> Zip["application.jar + Procfile → deploy.zip"]
-    Zip --> EB["AWS Elastic Beanstalk"]
-    EB --> App["Spring Boot · port 5000"]
-    App --> RDS["AWS RDS MySQL"]
-    App --> S3["AWS S3"]
-    App --> AI["OpenAI API"]
-    App --> Health["GET / · GET /health"]
+flowchart TB
+    Main["원본 GitHub main"] --> Change{"변경 경로"}
+    Change -->|"backend 또는 workflows"| Build["Actions / Java 21 / Gradle"]
+    Change -->|"README만 변경"| Docs["백엔드 자동 배포 대상 아님"]
+    Manual["수동 workflow_dispatch"] --> Build
+    Build --> Package["application.jar + Procfile / deploy.zip"]
+    Package --> EB["Elastic Beanstalk / 5000"]
+    EB --> Health["Actuator 상태 확인"]
+    EB --> RDS["AWS RDS MySQL"]
+    Frontend["React·Vite / dist"] --> Amplify["AWS Amplify"]
 ```
 
-백엔드 자동 배포 과정은 원본 워크플로에서 확인됩니다. 프론트엔드의 AWS Amplify 배포는 사용자 제공 정보로 확인했으며, Git 이력에 설정 파일이 없어 자동화 방식까지는 적지 않았습니다.
+백엔드는 원본 워크플로에서 빌드·ZIP 생성·Elastic Beanstalk 배포를 확인할 수 있습니다. 가장 최근에 확인 가능한 [배포 실행 #28488782913](https://github.com/guddlrdl123/WeatherOfTheHeart-/actions/runs/28488782913)은 **2026년 7월 1일**에 빌드와 배포 단계 모두 성공했으며, 대상 커밋은 [`7ec6142`](https://github.com/guddlrdl123/WeatherOfTheHeart-/commit/7ec61429f6b6e4e92933e39f67df6ec8a58ecba4)입니다. 배포 빌드는 `-x test`로 테스트를 제외합니다.
 
-원본 설정에 남아 있던 서비스 도메인은 2026년 7월 17일 기준 DNS 응답을 확인할 수 없었습니다. 프로젝트 종료 후 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했으므로 현재 상태는 **데모 운영 종료**로 표시합니다.
+프론트엔드 배포 경험은 기존 담당 기록을 유지하고, 재현 시에는 현재 Vite 소스에 맞는 `dist` 산출물과 React Router 주소 재작성을 사용합니다. 당시 AWS 콘솔 설정이나 로드밸런서에 등록된 상태 확인 경로는 저장소만으로 확정하지 않습니다. [실행·배포 안내](docs/RUN_GUIDE.md)에 환경변수, 빌드 설정과 확인 방법을 정리했습니다.
+
+프로젝트 종료 후 유지 비용을 줄이기 위해 AWS 배포 리소스를 정리했으므로 현재 상태는 **데모 운영 종료**로 표시합니다.
+
+## 실행 방법과 상태 확인
+
+이 저장소는 문서형 포트폴리오입니다. 애플리케이션을 실행할 때는 [원본 팀 저장소](https://github.com/guddlrdl123/WeatherOfTheHeart-)를 내려받습니다.
+
+```bash
+git clone https://github.com/guddlrdl123/WeatherOfTheHeart-.git
+cd WeatherOfTheHeart-
+```
+
+Java 21, Node.js 22.12 이상, Docker Compose를 준비한 뒤 루트 `.env`를 작성하고 로컬 MySQL → 백엔드 → 프론트엔드 순서로 실행합니다. Windows PowerShell 명령, AES 키 생성, 기능별 필수 설정과 주요 API는 [실행·배포 안내](docs/RUN_GUIDE.md)에 모두 정리했습니다.
+
+| 경로 | 확인 내용 | 현재 근거 |
+| --- | --- | --- |
+| `GET /actuator/health` | Actuator가 자동 등록한 DB·메일 등의 상태를 종합한 결과. 정상일 때 `{"status":"UP"}` | Actuator 의존성과 기본 경로. 실제 응답은 실행 환경에서 확인 |
+| `GET /health` | HTTP 200과 고정 문자열 `OK` | `HealthCheckController` 직접 구현 |
+| `GET /` | HTTP 200과 고정 문자열 `OK` | 같은 컨트롤러의 루트 응답 |
+
+```powershell
+Invoke-RestMethod http://localhost:5000/actuator/health
+```
+
+`/actuator/health`도 OpenAI·S3와 전체 서비스 기능을 자동으로 검증하는 것은 아닙니다. 로드밸런서 상태 확인 경로를 지정할 때는 실행 중인 서버의 응답 코드와 검사 범위를 함께 확인합니다.
 
 ## 검증 현황과 기술적 한계
 
-확인되지 않은 성능 수치나 운영 성과는 작성하지 않았습니다. 아래 내용은 2026년 7월 17일 원본 `main`의 코드와 워크플로에서 확인되는 현재 상태입니다.
+**기술 설정 재확인일: 2026년 10월 1일.** 원본 `main` 커밋 `40a127e`의 코드·설정과 GitHub Actions 기록을 대조했습니다. 이번 점검은 문서와 소스의 대조이며, 애플리케이션 테스트나 AWS 서비스 재배포는 수행하지 않았습니다. 세부 근거는 [README 점검 기록](docs/README_AUDIT.md)에 남겼습니다.
 
 | 항목 | 확인된 상태 | 한계와 다음 개선 |
 | --- | --- | --- |
 | 자동 테스트 | [`BackendApplicationTests`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/test/java/com/woth/backend/BackendApplicationTests.java)의 컨텍스트 로드 1건, [`AuthServiceTest`](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/backend/src/test/java/com/woth/backend/auth/AuthServiceTest.java)의 OAuth 재가입 회귀 테스트 1건 | 광장 완료 조건, 중복 실행, S3 실패와 편지 중복 방지 테스트가 추가로 필요 |
 | 배포 빌드 | GitHub Actions에서 `./gradlew clean build -x test` 실행 | 배포 전 별도 테스트 작업을 추가하고 통과한 산출물만 배포하도록 개선 필요 |
-| 비동기 완료 처리 | `AFTER_COMMIT`과 `@Async`, DB의 `imageGenerating` 상태로 요청과 중복 실행을 분리 | 영속 메시지 큐와 재시도 정책이 없어 프로세스 종료·외부 API 실패 시 자동 복구가 제한적 |
-| 헬스 체크 | `/`, `/health`가 HTTP 200과 `OK` 반환 | DB·S3·OpenAI 상태를 확인하지 않는 얕은 생존 확인이므로 readiness 체크 분리 필요 |
+| 비동기 완료 처리 | `AFTER_COMMIT`과 `@Async`, `imageGenerating` 진행 상태 확인. OpenAI HTTP 요청에는 조건부 재시도 존재 | 완료 작업 자체의 영속 큐·자동 복구와 원자적 중복 방지는 추가 구현 필요 |
+| 헬스 체크 | Actuator 의존성으로 `/actuator/health` 사용 가능. `/`, `/health`는 고정 `OK` | 기본 상태 확인과 OpenAI·S3·전체 기능 검증을 구분. 실제 로드밸런서 경로는 AWS 설정 확인 필요 |
 | 이미지 접근 | S3 공개 기준 URL과 객체 키를 조합해 결과 URL 생성 | 감정 기록 결과의 공개 범위를 줄이려면 비공개 버킷과 서명 URL 검토 필요 |
 | 성능·운영 지표 | 저장 트랜잭션과 외부 AI 작업을 구조적으로 분리 | 응답 시간·성공률·재시도 횟수의 실측 자료가 없어 정량 개선 수치는 주장하지 않음 |
 | 데모 | 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스를 정리해 데모 운영 종료 | 개인정보를 제거한 화면 캡처와 30~60초 시연 영상 추가 필요 |
@@ -413,3 +418,4 @@ flowchart LR
 - 어려운 기술 이름을 나열하기보다 사용자에게 어떤 변화가 생겼는지 설명하는 것이 중요하다는 점
 
 더 솔직한 문제 해결 과정과 다시 만든다면 바꾸고 싶은 점은 [쉬운 프로젝트 회고](docs/PROJECT_REVIEW.md)에 정리했습니다.
+

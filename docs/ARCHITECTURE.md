@@ -4,17 +4,18 @@
 
 - 원본 저장소: [guddlrdl123/WeatherOfTheHeart-](https://github.com/guddlrdl123/WeatherOfTheHeart-)
 - 전체 데이터 모델: [원본 저장소 DB ERD](https://github.com/guddlrdl123/WeatherOfTheHeart-/blob/main/docs/db-erd.md)
-- 분석 기준: 2026년 7월 17일 `main`
+- 기술 설정 재확인: 2026년 10월 1일, 원본 `main` 커밋 [`40a127e`](https://github.com/guddlrdl123/WeatherOfTheHeart-/commit/40a127ecd8baf8b110a438e9ef1a858a0bf6e77b)
+- 실행 안내: [로컬 실행과 AWS 배포](RUN_GUIDE.md) · [이번 점검 근거](README_AUDIT.md)
 - 프로젝트 형태: 4인 팀 프로젝트
 - 김준영 담당: Java 백엔드, 광장 완료·AI 이미지 흐름, S3 저장, GitHub Actions·YAML·환경변수 구성, Elastic Beanstalk 백엔드 배포, AWS Amplify 프론트엔드 배포
 
 ## 1. 전체 시스템 구조
 
 ```mermaid
-flowchart LR
+flowchart TB
     User["사용자"] --> Web["React 19 + TypeScript"]
     Amplify["AWS Amplify"] --> Web
-    Web -->|"JSON REST API"| API["Spring Boot 4 Backend"]
+    Web -->|"JSON REST API"| API["Spring Boot 4.0.6 Backend"]
 
     subgraph BackendDomains["Backend Domains"]
         Auth["인증·OAuth·이메일"]
@@ -49,7 +50,7 @@ flowchart LR
 | Client | React, TypeScript, Vite | 화면 렌더링, 사용자 입력, 오브젝트 배치와 API 호출 |
 | API | Java 21, Spring Boot, Spring Web MVC | REST API, 인증과 도메인 로직 |
 | Persistence | Spring Data JPA, MySQL | 사용자·기억·광장·편지·운영 데이터 저장 |
-| AI | WebClient, OpenAI API, LangChain4j | 감정 분석과 광장 완성 이미지 생성 |
+| AI | WebClient, OpenAI API | 글의 정서에 맞는 날씨 분석과 광장 이미지 생성. LangChain4j starter는 의존성 선언 |
 | Object storage | AWS SDK for Java, S3 | AI 결과와 서비스 이미지 저장 |
 | Infrastructure | Elastic Beanstalk, Amplify, RDS | 백엔드·프론트엔드 운영 환경과 운영 DB |
 | Delivery | GitHub Actions, Gradle, Procfile | 백엔드 자동 빌드, 패키징과 배포 |
@@ -61,7 +62,7 @@ flowchart TB
     Login["사용자 로그인"] --> Choice{"기록 공간 선택"}
 
     Choice -->|"개인 방"| PrivateInput["개인 감정 기록"]
-    PrivateInput --> Analyze["AI 감정·날씨·오브젝트 분석"]
+    PrivateInput --> Analyze["AI 글의 정서와 날씨 분석"]
     Analyze --> PrivateMemory["PrivateMemory 저장"]
     PrivateMemory --> PrivateRoom["날짜별 개인 방 시각화"]
 
@@ -74,7 +75,7 @@ flowchart TB
     Letters --> Mailbox["편지함 조회"]
 ```
 
-개인 방은 한 사용자의 기록을 날짜별로 보존하고, 광장은 여러 참여자의 데이터를 하나의 결과 이미지로 결합합니다.
+개인 방은 월별로 생성되어 기록을 날짜별로 보존하고, 광장은 여러 참여자의 데이터를 하나의 결과 이미지로 결합합니다. 개인 기억 생성 시 AI가 결정하는 값은 날씨이며, 감정 태그와 오브젝트는 사용자 선택값을 저장합니다.
 
 ## 3. 주요 도메인 관계
 
@@ -147,7 +148,7 @@ flowchart TB
     Actions --> Build["Gradle + JDK 21"]
     Build --> Package["application.jar + Procfile"]
     Package --> EB["Elastic Beanstalk"]
-    EB --> Health["/ · /health"]
+    EB --> Health["/actuator/health 상태 확인"]
 
     Frontend["React 프론트엔드"] --> Amplify["AWS Amplify 배포"]
 ```
@@ -168,26 +169,23 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-    actor User as 사용자
-    participant FE as Frontend
+    participant FE as 프론트엔드
     participant PC as PlazaController
     participant PS as PlazaService
-    participant PR as PlazaEntryRepository
     participant DB as MySQL
-    participant EP as EventPublisher
-
-    User->>FE: 감정·오브젝트 입력
-    FE->>PC: POST 광장 참여
+    participant PCS as 완료 서비스
+    FE->>PC: 광장 참여 요청
     PC->>PS: createEntry
-    PS->>DB: 광장·사용자 확인
-    PS->>PR: 중복 참여·오브젝트 검사
-    PS->>PR: 현재 참여 수 확인
-    PS->>PR: PlazaEntry 저장
-    PR->>DB: INSERT
-    PS->>EP: PlazaEntryCreatedEvent 발행
+    PS->>DB: 사용자와 정원·중복 확인
+    PS->>DB: 참여 글 저장
+    PS->>PS: PlazaEntryCreatedEvent 발행
     DB-->>PS: 트랜잭션 커밋
-    PS-->>PC: 저장 결과
-    PC-->>FE: API 응답
+    par 저장 응답
+        PS-->>PC: 저장 결과
+        PC-->>FE: API 응답
+    and 커밋 이후 작업
+        PS-->>PCS: AFTER_COMMIT + Async
+    end
 ```
 
 이벤트는 트랜잭션 안에서 발행되지만 완료 리스너가 `AFTER_COMMIT` 단계에 연결돼, AI 작업은 DB 커밋 이후 시작합니다.
@@ -196,29 +194,24 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Event as AFTER_COMMIT Event
-    participant PCS as PlazaCompletionService
+    participant PCS as 완료 서비스
     participant DB as MySQL
-    participant PB as PromptBuilder
     participant AI as OpenAI API
     participant S3 as AWS S3
     participant MB as MailboxService
-
-    Event-->>PCS: plazaId, forceComplete
-    PCS->>DB: 새 트랜잭션에서 Plaza·Entry 조회
-    PCS->>PCS: entryCount와 maxObjects 비교
-    alt 완료 조건 미충족
-        PCS-->>Event: 종료
-    else 완료 조건 충족 또는 방장 종료
-        PCS->>PB: 프롬프트 구성
-        PCS->>DB: imageGenerating 잠금
+    PCS->>DB: 완료 조건과 참여 데이터 조회
+    alt 완료 조건 충족 또는 방장 종료
+        PCS->>PCS: 프롬프트와 수신자 확정
+        PCS->>DB: imageGenerating 진행 상태 확인·변경
         PCS->>AI: 이미지 생성 요청
-        AI-->>PCS: image data URL
-        PCS->>S3: plazas/{id}/{uuid} 업로드
+        AI-->>PCS: 이미지 data URL
+        PCS->>S3: 이미지 업로드
         S3-->>PCS: 이미지 URL
-        PCS->>MB: 참여자별 완성 편지 요청
-        MB->>DB: 중복 검사 후 Letter 저장
-        PCS->>DB: imageGenerating 해제
+        PCS->>MB: 완성 편지 저장 요청
+        MB->>DB: 수신자별 중복 검사 후 저장
+        PCS->>DB: 생성 진행 상태 해제
+    else 완료 조건 미충족
+        PCS->>PCS: 작업 종료
     end
 ```
 
@@ -234,7 +227,7 @@ sequenceDiagram
 ## 7. AI 이미지 처리 구조
 
 ```mermaid
-flowchart LR
+flowchart TB
     Entries["PlazaEntry 목록"] --> Limit["최대 30개 선택"]
     Limit --> Normalize["텍스트·좌표 정규화"]
     Normalize --> Prompt["장면 프롬프트"]
@@ -257,7 +250,7 @@ flowchart LR
 ## 8. 배포 구조
 
 ```mermaid
-flowchart LR
+flowchart TB
     Frontend["React + Vite 프론트엔드"] --> Amplify["AWS Amplify"]
 
     Dev["개발자 push"] --> Main["GitHub main"]
@@ -274,7 +267,7 @@ flowchart LR
     Spring --> S3["AWS S3"]
     Spring --> OpenAI["OpenAI API"]
     Spring --> Mail["SMTP"]
-    EB --> Health["GET / 또는 /health"]
+    EB --> Health["/actuator/health 상태 확인"]
 ```
 
 ### 워크플로 설정
@@ -289,7 +282,7 @@ flowchart LR
 | 버전 라벨 | GitHub run ID와 run attempt 조합 |
 | AWS 인증 | GitHub Secrets |
 
-프론트엔드는 AWS Amplify에 배포했으며 사용자 제공 정보상 김준영 담당입니다. Amplify는 AWS 콘솔에서 설정할 수 있어 별도 YAML이 꼭 필요하지 않습니다. 전체 Git 이력에는 Amplify 설정 파일이나 별도 워크플로가 없어, 위 구조에는 실제 배포 서비스만 표시하고 자동화 방식은 단정하지 않았습니다.
+프론트엔드는 AWS Amplify에 배포했으며 기존 담당 기록상 김준영 담당입니다. 현재 Vite 소스의 재현 기준은 `appRoot: frontend`, `npm ci`, `npm run build`, 산출물 `dist`입니다. 원본 저장소에 당시 콘솔 설정 파일이 없으므로 재현용 예시는 [실행 안내](RUN_GUIDE.md)에서 따로 제시합니다. 백엔드는 [2026년 7월 1일 Actions 실행](https://github.com/guddlrdl123/WeatherOfTheHeart-/actions/runs/28488782913)에서 빌드와 Elastic Beanstalk 배포 단계의 성공을 확인했습니다.
 
 ## 9. 설정과 환경변수 경계
 
@@ -323,19 +316,22 @@ flowchart TB
 
 | 엔드포인트 | 응답 | 의미 |
 | --- | --- | --- |
-| `GET /` | `200 OK`, `OK` | 루트 경로의 기본 생존 확인 |
-| `GET /health` | `200 OK`, `OK` | Elastic Beanstalk·ELB 상태 확인용 |
+| `GET /actuator/health` | 정상일 때 `{"status":"UP"}` | Actuator가 자동 등록한 DB·메일 등의 상태를 종합. 실제 응답은 실행 환경에서 확인 |
+| `GET /health` | `200 OK`, `OK` | 컨트롤러가 반환하는 고정 HTTP 응답 |
+| `GET /` | `200 OK`, `OK` | 같은 컨트롤러의 루트 응답 |
 
-현재 구현은 애플리케이션 프로세스가 HTTP 요청에 응답하는지 확인하는 얕은 헬스 체크입니다. DB·S3·OpenAI 연결까지 검사하지 않기 때문에, 외부 서비스 문제는 애플리케이션 로그와 각 AWS 서비스 상태를 함께 봐야 합니다.
+현재 실행 안내는 `/actuator/health`를 우선 확인하고, `/health`와 `/`를 단순 응답 확인용으로 구분합니다. `application.yaml`에는 Actuator 기본 경로를 바꾸는 설정이 없습니다. OpenAI·S3나 전체 기능의 정상 여부는 기본 Actuator 응답만으로 보장되지 않으며, 실제 로드밸런서에 등록된 경로는 AWS 콘솔 설정에서 확인해야 합니다.
 
 ## 11. 운영 상태와 확인된 한계
 
-- 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스를 정리했으며, 원본 설정의 서비스 도메인도 2026년 7월 17일 기준 DNS 응답이 없어 데모 운영 종료로 표시했습니다.
+- 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스를 정리해 데모 운영 종료로 표시합니다. 이번 점검에서 현재 AWS 리소스를 재기동하지 않았습니다.
 - RDS 보안 그룹, IAM 정책과 Elastic Beanstalk 환경 속성 자체는 저장소에 포함되지 않으므로 코드의 환경변수 참조와 사용자 제공 정보를 기준으로 설명했습니다.
 - 전체 Git 이력에는 Amplify 설정 파일과 배포 워크플로가 없어 사용자 제공 담당 정보를 기준으로 설명했습니다.
 - `MAIN`, `SUPPORTING` 오브젝트 역할 구분은 현재 코드에 없어 구조도에 넣지 않았습니다.
 - 관리자 신고·경고·정지 기능은 프로젝트 전체 구조에 포함하지만 김준영의 직접 구현 영역으로 표시하지 않았습니다.
 - 백엔드 테스트 파일은 컨텍스트 로드와 인증 회귀 테스트 각 1건이며, 배포 워크플로는 테스트를 제외하므로 자동 검증 범위가 좁습니다.
-- `@Async` 완료 처리는 애플리케이션 프로세스 안에서 실행되며, 영속 메시지 큐나 자동 재시도 정책은 확인되지 않았습니다.
+- `@Async` 완료 처리는 애플리케이션 프로세스 안에서 실행됩니다. OpenAI HTTP 요청은 연결 오류·시간 초과·429·5xx에 조건부 재시도하지만, 완료 작업을 보존하고 서버 재시작 후 이어가는 영속 큐·자동 복구는 구현되어 있지 않습니다.
+- `imageGenerating` 상태 확인은 생성 중 추가 작업을 제한하는 장치이며 원자적 DB 잠금은 아닙니다.
 - S3 결과 URL은 공개 기준 URL을 조합하는 방식이므로, 민감한 결과 이미지에는 비공개 버킷과 서명 URL 방식이 더 적합합니다.
 - 우수상 증빙은 추가됐고, 실제 서비스 화면과 시연 영상은 개인정보 확인 후 [images 안내](../images/README.md)에 따라 추가해야 합니다.
+

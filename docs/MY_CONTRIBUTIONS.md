@@ -4,7 +4,9 @@
 
 - 원본 저장소: [guddlrdl123/WeatherOfTheHeart-](https://github.com/guddlrdl123/WeatherOfTheHeart-)
 - 분석 기준 브랜치: `main`
-- 분석 기준일: 2026년 7월 17일
+- 기여 이력 분석 기준일: 2026년 7월 17일
+- 기술 설정 재확인일: 2026년 10월 1일, 원본 `main` 커밋 `40a127e`
+- 현재 설정과 배포 근거: [README 점검 기록](README_AUDIT.md)
 - 이전 GitHub 사용자 이름: `bamkkayo`
 - 확인된 Git 작성자: `bamkkayo <junyeong2107@gmail.com>`
 
@@ -120,7 +122,7 @@ if (entries.size() >= plaza.getMaxObjects()) {
 - 이미 완료된 광장이 아닌가
 - 참여 글 수가 `maxObjects` 이상인가
 - 방장이 직접 종료한 경우 `forceComplete`로 같은 완료 흐름을 실행하는가
-- `imageGenerating` 상태로 같은 이미지 생성 작업이 중복 실행되지 않는가
+- `imageGenerating` 상태가 이미 생성 중으로 표시되어 추가 작업을 종료해야 하는가
 
 `PlazaCompletionService`는 완료 시점에 광장 정보, 참여 데이터, 프롬프트와 편지 수신자 정보를 하나의 `CompletionSnapshot`으로 확정합니다. 지연 로딩 대상이 비동기 작업 밖에서 뒤늦게 조회되는 문제를 피하기 위해 필요한 정보를 트랜잭션 안에서 읽습니다.
 
@@ -236,14 +238,16 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 - Spring Boot 기본 포트: `5000`
 - DB·OpenAI·메일·OAuth·AWS 설정: 환경변수 참조
 - 민감값: GitHub Secrets 또는 Elastic Beanstalk 환경 속성에서 관리
-- 서버 상태 확인: `GET /`, `GET /health`
+- 상태 확인 안내: `GET /actuator/health` 우선 확인. `GET /`, `GET /health`는 고정 `OK` 응답 확인
+- 실제 Elastic Beanstalk·로드밸런서 검사 경로: 당시 AWS 콘솔 설정 원본이 없어 저장소만으로 확정하지 않음
 
 ### 프론트엔드: AWS Amplify
 
 - React 프론트엔드의 운영 배포에 AWS Amplify 사용
 - 사용자 제공 정보상 김준영 담당
 - Amplify는 AWS 콘솔에서 저장소와 빌드 설정을 연결할 수 있어 별도 YAML이 꼭 필요하지 않음
-- 전체 Git 이력에는 Amplify 설정 파일이 없어 서비스 선택과 담당 사실만 기록
+- 당시 Amplify 콘솔 설정은 저장소에 없으므로 서비스 선택과 담당 사실을 유지
+- 현재 소스 재현용 빌드: React·Vite, `npm ci` → `npm run build`, `dist` 산출물. [재현용 Amplify 설정](RUN_GUIDE.md) 참고
 - 프로젝트 종료 후 유지 비용 절감을 위해 AWS 배포 리소스 정리
 
 ## 8. GitHub Actions 백엔드 자동 배포
@@ -287,7 +291,9 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 - 배포 직후 서버가 5000 포트에서 정상 기동했는지 확인
 - GitHub Actions 배포 후 기본 상태 점검
 
-현재 컨트롤러는 DB나 OpenAI·S3의 상태까지 검사하는 심층 헬스 체크가 아니라, 웹 애플리케이션이 요청에 응답하는지를 확인하는 가벼운 체크입니다.
+이 컨트롤러는 웹 애플리케이션의 HTTP 응답을 확인합니다. 별도로 `624c0fd`에서 추가한 Actuator 의존성은 기본 `/actuator/health`에서 자동 등록된 DB·메일 등의 상태를 종합합니다. 현재 실행 안내는 이 경로를 우선 확인하되, OpenAI·S3와 전체 기능 검증은 별도 확인이 필요하다고 구분합니다.
+
+Actuator 경로는 별도 심층 검사 컨트롤러를 직접 구현했다는 기여로 표시하지 않습니다. 이번 점검에서도 당시 로드밸런서가 어느 경로를 사용했는지는 확정하지 않았습니다.
 
 ## 11. 관리자 신고와 사용자 제재 기능
 
@@ -322,11 +328,11 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 
 ## 커밋 귀속과 팀 후속 개선
 
-사용자 요청에 따라 `bamkkayo` 이름만 검색하지 않고 전체 335개 커밋을 검사했습니다.
+아래 전체 이력·blame 수치는 2026년 7월 17일에 수행한 기존 기여 검토 기록입니다. 2026년 10월 1일에는 원본 GitHub의 작성자 이메일 기준 검색으로 `bamkkayo` 직접 작성 커밋 63개를 다시 확인했습니다.
 
 ### 전체 검사 결과
 
-- `main`과 `--all`의 도달 가능한 커밋 수가 모두 335개로, 별도 원격 브랜치에만 숨은 커밋은 없었습니다.
+- 2026년 7월 17일 당시 `main`과 `--all`의 도달 가능한 커밋 수가 모두 335개였다는 기존 검토 기록을 보존합니다. 이 수치를 현재 모든 원격 브랜치의 커밋 수로 확대하지 않습니다.
 - Git 작성자 식별자는 `bamkkayo`, `guddlrdl123`, `Change03`, `eunjung3` 네 종류입니다.
 - `Co-authored-by` 트레일러는 9개 확인됐으며 모두 `Claude Opus 4.8 <noreply@anthropic.com>`입니다. 김준영을 공동 작성자로 표시한 트레일러는 없어 개인 기여 커밋 수에 더하지 않았습니다.
 - `bamkkayo <junyeong2107@gmail.com>` 직접 작성 커밋은 63개입니다.
@@ -348,3 +354,4 @@ Elastic Beanstalk 인스턴스의 로컬 디스크는 재배포나 인스턴스 
 | [f25528b](https://github.com/guddlrdl123/WeatherOfTheHeart-/commit/f25528b) | guddlrdl123 | 최종 이미지 프롬프트 추가 조정 |
 
 이 구분을 통해 현재 코드의 팀 공동 발전 과정은 설명하면서도, 확인되지 않은 타 계정 커밋을 개인 성과로 과장하지 않았습니다.
+
